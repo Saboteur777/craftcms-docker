@@ -2,7 +2,7 @@
 
 ![Last commit](https://badgen.net/github/last-commit/Saboteur777/craftcms-docker/v3)
 ![Docker Build mode](https://badgen.net/badge/docker%20build/automated)
-![Docker layers count](https://images.microbadger.com/badges/image/webmenedzser/craftcms.svg)
+[![Docker layers count](https://images.microbadger.com/badges/image/webmenedzser/craftcms.svg)](https://microbadger.com/images/webmenedzser/craftcms)
 ![Docker Pull count](https://badgen.net/docker/pulls/webmenedzser/craftcms)
 ![Keybase.io PGP](https://badgen.net/keybase/pgp/Saboteur777)
 
@@ -23,11 +23,22 @@ You can change which user should run PHP - just build your image by extending th
 FROM: webmenedzser/craftcms:latest
 
 [...]
-RUN apk add shadow && usermod -u 1000 www-data && groupmod -g 1000 www-data
+# Add APACHE_RUN_USER user
+RUN useradd -u 1000 -G www-data -M saboteur
 [...]
 ```
 
-This will change both the UID and GID of `www-data` user (which is the default to run PHP) to 1000.
+AND 
+
+**docker-compose.yml**
+```
+[...]
+    environment:
+      - APACHE_RUN_USER=#1000
+[...]
+```
+
+This will instruct Docker to add a new user during the build process with user ID 1000, add it to the www-data group and run Apache as user 1000. 
 
 ### Add custom PHP settings
 You can easily add new PHP settings to the image. Just place your `.ini` file in e.g. the `.docker/php` folder, and `COPY` it:
